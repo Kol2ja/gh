@@ -60,4 +60,4 @@ while game == True:
     baelle = [rot_rect, gruen_rect, blau_rect]
     angle_baelle = [angle_rot, angle_gruen, angle_blau]
 
-    # заготова сфер
+    # заготова сферры
