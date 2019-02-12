@@ -82,7 +82,7 @@ while game == True:
     end = 0
 
     # Все основные константы объявлены
-    # Начало цикла
+    # Начало цикла для заглавного окна
     while x2 == 1:
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -144,3 +144,50 @@ while game == True:
 
         pygame.display.update()
         # Вывели все основные надписи
+        # Начало основного цикла
+        while x == 1:
+            time_count += 1  # время
+            # print(angle_player)
+
+            if pr_player_left:
+                angle_player += 5
+            if pr_player_right:
+                angle_player -= 5
+
+            if pr_player:
+                b = math.cos(
+                    math.radians(angle_player)) * mvsp  # Длинна прилижащего катета
+
+                a = math.sin(
+                    math.radians(angle_player)) * mvsp  # Длинна противополжного катета
+
+                # if player.top >= 0 and player.bottom <= wh:
+                player.top += round(b)
+                # if player.left >= 0 and player.right <= ww:
+                player.left += round(a)
+
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    x = 0
+
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        x = 0
+                    if event.key == K_UP or event.key == K_w:
+                        pr_player = True
+
+                    if event.key == K_LEFT or event.key == K_a:
+                        pr_player_left = True
+
+                    if event.key == K_RIGHT or event.key == K_d:
+                        pr_player_right = True
+
+                if event.type == KEYUP:
+                    if event.key == K_UP or event.key == K_w:
+                        pr_player = False
+                    if event.key == K_LEFT or event.key == K_a:
+                        pr_player_left = False
+                    if event.key == K_RIGHT or event.key == K_d:
+                        pr_player_right = False
+            # обработка нажатий
