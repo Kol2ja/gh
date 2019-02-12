@@ -2,8 +2,26 @@
 import math
 import pygame
 import random
+import os
 import time
 from pygame.locals import *
+
+
+def load_image(name, color_key=None):
+    fullname = os.path.join('data', name)
+    try:
+        image = pygame.image.load(fullname)
+    except pygame.error as message:
+        print('Cannot load image:', name)
+        raise SystemExit(message)
+    image = image.convert_alpha()
+
+    if color_key is not None:
+        if color_key is -1:
+            color_key = image.get_at((0, 0))
+        image.set_colorkey(color_key)
+    return image
+
 
 pygame.init()
 
@@ -23,34 +41,34 @@ pygame.display.set_caption("Не получай урон от кужков!")
 
 pygame.display.update()
 
-spieler = pygame.image.load("player_1.png")
+spieler = load_image("player_1.png")
 # Загружаем игрока
 player_x = ww / 2
 player_y = wh / 2
 player = pygame.Rect(player_x, player_y, spieler.get_rect().width, spieler.get_rect().height)
 
-pygame.mixer.music.load("noise.mp3")  # добавим музыку
+pygame.mixer.music.load(os.path.join('data', "noise.mp3"))  # добавим музыку
 
 difficult = "Normal"
 hels = 1  # количество жизней
 game = True  # позволит в будущем выйти из игры
 while game == True:
-    ball_rot = pygame.image.load("ball_rot.png")
+    ball_rot = load_image("ball_rot.png")
     rot_rect = pygame.Rect(random.randint(0, ww - ball_rot.get_rect().width),
                            random.randint(0, wh - ball_rot.get_rect().height), ball_rot.get_rect().width,
                            ball_rot.get_rect().height)
 
-    ball_gruen = pygame.image.load("ball_gruen.png")
+    ball_gruen = load_image("ball_gruen.png")
     gruen_rect = pygame.Rect(random.randint(0, ww - ball_gruen.get_rect().width),
                              random.randint(0, wh - ball_gruen.get_rect().height), ball_gruen.get_rect().width,
                              ball_gruen.get_rect().height)
 
-    ball_blau = pygame.image.load("ball_blau.png")
+    ball_blau = load_image("ball_blau.png")
     blau_rect = pygame.Rect(random.randint(0, ww - ball_blau.get_rect().width),
                             random.randint(0, wh - ball_blau.get_rect().height), ball_blau.get_rect().width,
                             ball_blau.get_rect().height)
 
-    explosion = pygame.image.load("explosion.png")
+    explosion = load_image("explosion.png")
 
     angle_rot = random.randint(0, 360)
     angle_gruen = random.randint(0, 360)
@@ -144,50 +162,85 @@ while game == True:
 
         pygame.display.update()
         # Вывели все основные надписи
-        # Начало основного цикла
-        while x == 1:
-            time_count += 1  # время
-            # print(angle_player)
 
-            if pr_player_left:
-                angle_player += 5
-            if pr_player_right:
-                angle_player -= 5
+    # Начало основного цикла
+    while x == 1:
+        time_count += 1  # время
+        # print(angle_player)
 
-            if pr_player:
-                b = math.cos(
-                    math.radians(angle_player)) * mvsp  # Длинна прилижащего катета
+        if pr_player_left:
+            angle_player += 5
+        if pr_player_right:
+            angle_player -= 5
 
-                a = math.sin(
-                    math.radians(angle_player)) * mvsp  # Длинна противополжного катета
+        if pr_player:
+            b = math.cos(
+                math.radians(angle_player)) * mvsp  # Длинна прилижащего катета
 
-                # if player.top >= 0 and player.bottom <= wh:
-                player.top += round(b)
-                # if player.left >= 0 and player.right <= ww:
-                player.left += round(a)
+            a = math.sin(
+                math.radians(angle_player)) * mvsp  # Длинна противополжного катета
 
-            pygame.display.update()
-            for event in pygame.event.get():
-                if event.type == QUIT:
+            # if player.top >= 0 and player.bottom <= wh:
+            player.top += round(b)
+            # if player.left >= 0 and player.right <= ww:
+            player.left += round(a)
+
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                x = 0
+
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
                     x = 0
+                if event.key == K_UP or event.key == K_w:
+                    pr_player = True
 
-                if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
-                        x = 0
-                    if event.key == K_UP or event.key == K_w:
-                        pr_player = True
+                if event.key == K_LEFT or event.key == K_a:
+                    pr_player_left = True
 
-                    if event.key == K_LEFT or event.key == K_a:
-                        pr_player_left = True
+                if event.key == K_RIGHT or event.key == K_d:
+                    pr_player_right = True
 
-                    if event.key == K_RIGHT or event.key == K_d:
-                        pr_player_right = True
+            if event.type == KEYUP:
+                if event.key == K_UP or event.key == K_w:
+                    pr_player = False
+                if event.key == K_LEFT or event.key == K_a:
+                    pr_player_left = False
+                if event.key == K_RIGHT or event.key == K_d:
+                    pr_player_right = False
+        # обработка нажати
 
-                if event.type == KEYUP:
-                    if event.key == K_UP or event.key == K_w:
-                        pr_player = False
-                    if event.key == K_LEFT or event.key == K_a:
-                        pr_player_left = False
-                    if event.key == K_RIGHT or event.key == K_d:
-                        pr_player_right = False
-            # обработка нажати
+        for i in range(len(baelle)):
+            zaehler = 0
+            if baelle[i].top <= 0 or baelle[i].bottom >= wh:
+                zaehler += 1
+
+                angle_baelle[i] = 360 - angle_baelle[i]
+
+                b = math.cos(math.radians(
+                    angle_baelle[i])) * mvsp_baelle
+                a = math.sin(math.radians(angle_baelle[i])) * mvsp_baelle
+
+                baelle[i].left += b
+                baelle[i].top += a
+
+            if baelle[i].left <= 0 or baelle[i].right >= ww:
+                zaehler += 1
+                angle_baelle[i] = 180 - angle_baelle[i]
+
+                b = math.cos(math.radians(
+                    angle_baelle[i])) * mvsp_baelle
+                a = math.sin(math.radians(angle_baelle[i])) * mvsp_baelle
+
+                baelle[i].left += b
+                baelle[i].top += a
+
+            if zaehler == 0:
+                b = math.cos(math.radians(
+                    angle_baelle[i])) * mvsp_baelle
+                a = math.sin(math.radians(angle_baelle[i])) * mvsp_baelle
+
+                baelle[i].left += b
+                baelle[i].top += a
+    # Логика шаров. Проверяет на вылет из границы и обновляет кординаты
