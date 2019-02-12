@@ -123,22 +123,25 @@ while game == True:
                         difficult = "Normal"
                     else:
                         difficult = "Hard"
-        # Вверху выбираем уровень сложности. Уровень на английском, так как русские аналоги большие по длине.
+        # Вверху выбираем уровень сложности. Уровень на английском, так как русские аналоги большие по длине
 
         if difficult == "Easy":
             spawn_count = 250
             diff_bg = (0, 255, 0)
-            hels = 50
+            hels = 10
+            pobeda = 1
 
-        if difficult == "Normal":
+        if difficult == "Norm":
             spawn_count = 150
             diff_bg = (255, 255, 0)
-            hels = 20
+            hels = 5
+            pobeda = 2
 
         if difficult == "Hard":
             diff_bg = (255, 0, 0)
             spawn_count = 50
             hels = 2
+            pobeda = 6
 
         fenster.fill((255, 175, 0))
         text_title = pygame.font.SysFont(None, 125)
@@ -152,7 +155,7 @@ while game == True:
         subt2 = text_subt.render("Нвжми esc для выхода", True, black, (255, 100, 0))
         subt3 = text_subt.render(difficult, True, black, diff_bg)
         subt4 = text_subt2.render("Используй стрелки, что бы изменить", True, black)
-        subt5 = text_subt.render("Слоность:", True, black)
+        subt5 = text_subt.render("Сложность:", True, black)
 
         fenster.blit(subt1, (100, 325))
         fenster.blit(subt2, (100, 400))
@@ -246,7 +249,7 @@ while game == True:
 
                 baelle[i].left += b
                 baelle[i].top += a
-    # Логика шаров. Проверяет на вылет из границы и обновляет кординаты
+        # Логика шаров. Проверяет на вылет из границы и обновляет кординаты
         fenster.fill(bg)
 
         player_rect = spieler.get_rect().center
@@ -258,7 +261,10 @@ while game == True:
         player_center_diff = (player.center[0] - player_center_neu[0], player.center[1] - player_center_neu[1])
         # команды для игрока
 
-        fenster.blit(player_neu, player_center_diff) # просто рисуем игрока
+        for i in range(len(baelle)):
+            fenster.blit(bilder_baelle[i], baelle[i])
+
+        fenster.blit(player_neu, player_center_diff)  # просто рисуем игрока
 
         zeit_zaehler += 1
         if zeit_zaehler >= spawn_count:
@@ -270,3 +276,56 @@ while game == True:
 
             zeit_zaehler = 0
         # команды для рестарта игры
+
+        for element in baelle:
+            if player.colliderect(element):
+
+                hels -= 1
+                print(hels)
+                if hels < 1:
+                    fenster.blit(explosion, (
+                        player.left - explosion.get_rect().width / 2 + 12,
+                        player.top - explosion.get_rect().height / 2 + 12))
+                    pygame.display.update()
+                    pygame.mixer.music.play()
+                    time.sleep(1)
+
+                    end = 1
+                    x = 0
+                player.left = ww / 2 - player.width / 2
+                player.top = wh / 2 - player.height / 2
+        # проверка на пересечение, если есть пересечение мы снимаем одну жизнь и отправляем в центр
+
+        pygame.display.update()
+        clock.tick(fps)
+        # обновление экрана
+
+        if not player.colliderect(0, 0, ww, wh):
+            hels -= 1
+            if hels < 1:
+                end = 1
+                x = 0
+            player.left = ww / 2 - player.width / 2
+            player.top = wh / 2 - player.height / 2
+        # проверка границ
+
+    # Конец
+    x = 1
+    while end == 1 and x == 1:
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                x = 0
+
+        fenster.fill((255, 255, 50))
+
+        basicFont = pygame.font.SysFont(None, 100)  # 150)
+        text = basicFont.render("Ты погиб =(", True, black)
+        text_time = text_subt.render("Cчет: " + str((round(time_count / fps, 2)) * pobeda), True, black)
+        text_Esc = text_subt.render("Нажми, что бы продолжить.", True, black)
+
+        fenster.blit(text, (50, 100))
+        fenster.blit(text_time, (75, 300))
+        fenster.blit(text_Esc, (75, 500))
+        pygame.display.update()
+
+pygame.quit()
