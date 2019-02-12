@@ -61,3 +61,86 @@ while game == True:
     angle_baelle = [angle_rot, angle_gruen, angle_blau]
 
     # заготова сферры
+
+    angle_player = 0
+    pr_player = False
+    pr_player_left = False
+    pr_player_right = False
+
+    mvsp = 3.5  # Скорость курсора
+    mvsp_baelle = 4
+    spawn_count = 150
+
+    zeit_zaehler = 0
+
+    clock = pygame.time.Clock()
+    fps = 50
+    time_count = 0
+
+    x = 1
+    x2 = 1
+    end = 0
+
+    # Все основные константы объявлены
+    # Начало цикла
+    while x2 == 1:
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    x = 0
+                    x2 = 0
+                    game = 0
+
+                if event.key == K_SPACE:
+                    x2 = 0
+
+                if event.key == K_DOWN and difficult != "Easy":
+                    if difficult == "Hard":
+                        difficult = "Normal"
+                    else:
+                        difficult = "Easy"
+
+                if event.key == K_UP and difficult != "Hard":
+                    if difficult == "Easy":
+                        difficult = "Normal"
+                    else:
+                        difficult = "Hard"
+        # Вверху выбираем уровень сложности. Уровень на английском, так как русские аналоги большие по длине.
+
+        if difficult == "Easy":
+            spawn_count = 250
+            diff_bg = (0, 255, 0)
+
+        if difficult == "Normal":
+            spawn_count = 150
+            diff_bg = (255, 255, 0)
+
+        if difficult == "Hard":
+            diff_bg = (255, 0, 0)
+            spawn_count = 50
+
+        fenster.fill((255, 175, 0))
+        text_title = pygame.font.SysFont(None, 125)
+        text_subt = pygame.font.SysFont(None, 75)
+        text_subt2 = pygame.font.SysFont(None, 25)
+
+        title = text_title.render("Курсор", True, black)
+        fenster.blit(title, (50, 50))
+
+        subt1 = text_subt.render("Жми пробел, чтобы начать", True, black, (255, 250, 0))
+        subt2 = text_subt.render("Нвжми esc для выхода", True, black, (255, 100, 0))
+        subt3 = text_subt.render(difficult, True, black, diff_bg)
+        subt4 = text_subt2.render("Используй стрелки, что бы изменить", True, black)
+        subt5 = text_subt.render("Слоность:", True, black)
+
+        fenster.blit(subt1, (100, 325))
+        fenster.blit(subt2, (100, 400))
+        fenster.blit(subt3, (500, 100))
+        fenster.blit(subt4, (500, 210))
+        fenster.blit(subt5, (500, 10))  # (325, 100))
+
+        pygame.draw.polygon(fenster, black, ((500, 90), (525, 65), (550, 90)))
+        pygame.draw.polygon(fenster, black, ((500, 167), (525, 192), (550, 167)))
+
+        pygame.display.update()
+        # Вывели все основные надписи
