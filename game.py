@@ -128,14 +128,17 @@ while game == True:
         if difficult == "Easy":
             spawn_count = 250
             diff_bg = (0, 255, 0)
+            hels = 50
 
         if difficult == "Normal":
             spawn_count = 150
             diff_bg = (255, 255, 0)
+            hels = 20
 
         if difficult == "Hard":
             diff_bg = (255, 0, 0)
             spawn_count = 50
+            hels = 2
 
         fenster.fill((255, 175, 0))
         text_title = pygame.font.SysFont(None, 125)
@@ -244,3 +247,26 @@ while game == True:
                 baelle[i].left += b
                 baelle[i].top += a
     # Логика шаров. Проверяет на вылет из границы и обновляет кординаты
+        fenster.fill(bg)
+
+        player_rect = spieler.get_rect().center
+        player_neu = pygame.transform.rotate(spieler, angle_player - 180)
+        player_neu.get_rect().center = player_rect
+
+        player_rect = spieler.get_rect()
+        player_center_neu = player_neu.get_rect().center
+        player_center_diff = (player.center[0] - player_center_neu[0], player.center[1] - player_center_neu[1])
+        # команды для игрока
+
+        fenster.blit(player_neu, player_center_diff) # просто рисуем игрока
+
+        zeit_zaehler += 1
+        if zeit_zaehler >= spawn_count:
+            baelle.append(pygame.Rect(random.randint(0, ww - ball_rot.get_rect().width),
+                                      random.randint(0, wh - ball_rot.get_rect().height), ball_rot.get_rect().width,
+                                      ball_rot.get_rect().height))
+            bilder_baelle.append(bilder_baelle[random.randint(0, 2)])
+            angle_baelle.append(random.randint(0, 360))
+
+            zeit_zaehler = 0
+        # команды для рестарта игры
