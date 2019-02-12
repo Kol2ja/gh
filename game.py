@@ -190,4 +190,4 @@ while game == True:
                         pr_player_left = False
                     if event.key == K_RIGHT or event.key == K_d:
                         pr_player_right = False
-            # обработка нажатий
+            # обработка нажати
