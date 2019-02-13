@@ -49,10 +49,12 @@ player = pygame.Rect(player_x, player_y, spieler.get_rect().width, spieler.get_r
 
 pygame.mixer.music.load(os.path.join('data', "noise.mp3"))  # добавим музыку
 
+pobeda = 2
 difficult = "Normal"
 hels = 1  # количество жизней
 game = True  # позволит в будущем выйти из игры
-while game == True:
+best = [0, 0, 0] # счет
+while game:
     ball_rot = load_image("ball_rot.png")
     rot_rect = pygame.Rect(random.randint(0, ww - ball_rot.get_rect().width),
                            random.randint(0, wh - ball_rot.get_rect().height), ball_rot.get_rect().width,
@@ -320,10 +322,19 @@ while game == True:
 
         basicFont = pygame.font.SysFont(None, 100)  # 150)
         text = basicFont.render("Ты погиб =(", True, black)
-        text_time = text_subt.render("Cчет: " + str((round(time_count / fps, 2)) * pobeda), True, black)
+        c = time_count
+        text_time = text_subt.render("Cчет: " + str((round(c / fps, 2)) * pobeda), True, black)
         text_Esc = text_subt.render("Нажми, что бы продолжить.", True, black)
+        best.append(round((c / fps) * pobeda))
+        best = list(set(best))
+        best.append(0)
+        best.sort(reverse=True)
+        best = best[:3]
+
+        ch = text_subt.render("Лучший счет: {}, {}, {}".format(str(best[0]), str(best[1]), str(best[2])), True, black)
 
         fenster.blit(text, (50, 100))
+        fenster.blit(ch, (75, 400))
         fenster.blit(text_time, (75, 300))
         fenster.blit(text_Esc, (75, 500))
         pygame.display.update()
